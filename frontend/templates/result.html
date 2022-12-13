@@ -1,0 +1,33 @@
+<doctype html>
+<style>
+table, th, td {
+  border: 1px solid black;
+  padding: 5px;
+}
+table {
+  border-spacing: 1px;
+}
+</style>
+<body>
+<h1>Search Results</h1>
+<table style="width:100%">
+    <tr>
+        <th>Library Id</th>
+        <th>Title</th>
+        <th>Published Year</th>
+        <th>Author</th>
+        <th>Category</th>
+        <th>Image</th>
+    </tr>
+    {% for book in booksdata %}
+    <tr>
+    <td>{{ book['_source']['id'] }}</td>
+    <td>{{ book['_source']['title'] }}</td>
+    <td>{{ book['_source']['year'] }}</td>
+    <td>{{ book['_source']['author'] }}</td>
+    <td>{{ book['_source']['category'] }}</td>
+    <td><a href={{ book['_source']['image'] }}><img src={{ book['_source']['image'] }} alt="Book image" style="width:200px;height:200px;"</a></td>
+    </tr>
+    {% endfor %}
+</table>
+</body>

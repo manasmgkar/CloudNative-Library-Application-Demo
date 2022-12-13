@@ -1,0 +1,27 @@
+<doctype html>
+<head>
+    <title>Welcome To the Fast indexed Library</title>
+</head>
+
+<h2>Welcome To The Fast indexed Library</h2>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+  <dl>
+    {{ render_field(form.select) }}
+    <p>
+    {{ render_field(form.search) }}
+  </dl>
+  <p><input type="submit" name="searchbutton" value="Search">
+  <p><input type="submit" name="getallbooks" value="Get All Books">
+</form>

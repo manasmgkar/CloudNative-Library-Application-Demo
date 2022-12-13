@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-auto
+  namespace: handson
+  labels:
+    name: backend-auto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: backend-auto
+  template:
+    metadata:
+      labels:
+        name: backend-auto
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: backend
+        image: eks-private-registry/backend:latest
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: config-vol
+          mountPath: /config
+        ports:
+        - containerPort: 5000
+          name: http
+        env:
+          - name: discovery.type
+            value: single-node
+      volumes:
+      - name: config-vol
+        configMap:  
+          name: appconfig       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: backend-auto
+  name: backend-auto
+spec:
+  selector:
+    name: backend-auto
+  type: NodePort
+  ports:
+    - nodePort: {{ .Values.ports.xyz }}
+      port: 5000
+      protocol: TCP
+      targetPort: 5000

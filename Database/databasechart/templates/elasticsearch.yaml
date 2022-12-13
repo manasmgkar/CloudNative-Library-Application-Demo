@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-auto
+  namespace: handson
+  labels:
+    name: es-auto
+spec:
+  serviceName: es-auto
+  replicas: 1
+  selector:
+    matchLabels:
+      name: es-auto
+  template:
+    metadata:
+      labels:
+        name: es-auto
+    spec:
+      initContainers:
+       - name: fix-permissions
+         image: busybox
+         imagePullPolicy: IfNotPresent
+         command: ["sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data"]
+         securityContext:
+           privileged: true
+         volumeMounts:
+         - name: data
+           mountPath: /usr/share/elasticsearch/data
+       - name: increase-vm-max-map
+         image: busybox
+         imagePullPolicy: IfNotPresent
+         command: ["sysctl", "-w", "vm.max_map_count=262144"]
+         securityContext:
+           privileged: true
+       - name: increase-fd-ulimit
+         image: busybox
+         imagePullPolicy: IfNotPresent
+         command: ["sh", "-c", "ulimit -n 65536"]
+         securityContext:
+            privileged: true
+      containers:
+      - name: elasticsearch
+        image: elasticsearch:7.8.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9200
+          name: http
+        env:
+          - name: discovery.type
+            value: single-node
+        volumeMounts:
+          - name: data
+            mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+   - metadata:
+       name: data
+       labels:
+        app: es-auto
+     spec:
+       accessModes: [ "ReadWriteOnce" ]
+       resources:
+        requests:
+         storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: es-auto
+  name: es-auto
+spec:
+  selector:
+    name: es-auto
+  type: NodePort
+  ports:
+    - nodePort: {{ .Values.ports.xyz }}
+      port: 9200
+      protocol: TCP
+      targetPort: 9200
