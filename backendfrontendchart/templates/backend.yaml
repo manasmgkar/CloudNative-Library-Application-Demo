@@ -19,7 +19,7 @@ spec:
       - name: regcred
       containers:
       - name: backend
-        image: eks-private-registry/backend:latest
+        image: manasmangaonkar/microservices-library-demo:backend
         imagePullPolicy: Always
         volumeMounts:
         - name: config-vol
