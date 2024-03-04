@@ -1,4 +1,4 @@
-# microservices-library-demo
+# CloudNative library Application Demo
 A book library application that is based on microservices and kubernetes.Originally created to teach new graduate teamates about various kubernetes fundamentals.
 
 ## Technical Components Used
